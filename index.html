@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSK1 Mandarin Companion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #fecaca 0%, #fed7aa 50%, #fef3c7 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 64rem;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-top: 5rem;
+        }
+
+        .flag-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -2rem);
+        }
+
+        .flag {
+            width: 5rem;
+            height: 3.5rem;
+            background: #dc2626;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid #fbbf24;
+            position: relative;
+        }
+
+        .flag::after {
+            content: '⭐';
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            color: #fbbf24;
+            font-size: 1rem;
+        }
+
+        .stars {
+            position: absolute;
+            top: 0.25rem;
+            left: 2rem;
+            color: #fbbf24;
+            font-size: 0.75rem;
+            line-height: 0.75rem;
+        }
+
+        .flag-emoji {
+            font-size: 2.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #dc2626, #ea580c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: #374151;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .emoji-row {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-button:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-button.active {
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            color: white;
+        }
+
+        .nav-button:not(.active) {
+            background: white;
+            color: #374151;
+        }
+
+        .progress-stats {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .category-filter {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .category-button {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-button.active {
+            background: #1f2937;
+            color: white;
+        }
+
+        .category-button:not(.active) {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .card-container {
+            max-width: 28rem;
+            margin: 0 auto;
+        }
+
+        .flashcard {
+            background: linear-gradient(135deg, white, #dbeafe);
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            padding: 2rem;
+            min-height: 20rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 4px solid #bfdbfe;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flashcard.mastered {
+            border-color: #86efac;
+            background: linear-gradient(135deg, #dcfce7, #dbeafe);
+        }
+
+        .card-bg-emoji {
+            position: absolute;
+            font-size: 4rem;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .card-bg-emoji.top-right {
+            top: 0;
+            right: 0;
+            transform: rotate(12deg);
+        }
+
+        .card-bg-emoji.bottom-left {
+            bottom: 0;
+            left: 0;
+            font-size: 2.5rem;
+        }
+
+        .mastery-star {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            color: #10b981;
+            font-size: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .card-content {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            z-index: 10;
+            position: relative;
+        }
+
+        .chinese-text {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #1f2937;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .pinyin-text {
+            font-size: 1.25rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+            background: #fef3c7;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+        }
+
+        .tone-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.25rem;
+            background: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 0.5rem;
+        }
+
+        .category-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .answer-section {
+            text-align: center;
+            animation: bounce 0.5s;
+            z-index: 10;
+            position: relative;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .answer-text {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: #059669;
+            margin-bottom: 0.5rem;
+            background: #dcfce7;
+            padding: 0.75rem 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tone-info {
+            font-size: 0.875rem;
+            color: #6b7280;
+            background: #f3f4f6;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
+        .control-button {
+            padding: 1rem;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-button:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-control {
+            background: linear-gradient(to right, #a855f7, #8b5cf6);
+            color: white;
+        }
+
+        .center-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 1rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .action-button:hover {
+            transform: scale(1.05);
+        }
+
+        .show-button {
+            background: linear-gradient(to right, #3b82f6, #4f46e5);
+            color: white;
+        }
+
+        .master-button {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+        }
+
+        .flip-button {
+            background: linear-gradient(to right, #8b5cf6, #ec4899);
+            color: white;
+            padding: 0.75rem 1rem;
+        }
+
+        .progress-info {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .progress-card {
+            background: white;
+            border-radius: 9999px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-text {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            height: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            background: linear-gradient(to right, #60a5fa, #8b5cf6);
+            height: 0.5rem;
+            border-radius: 9999px;
+            transition: all 0.3s;
+        }
+
+        .shuffle-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .shuffle-button.shuffled {
+            background: #10b981;
+            color: white;
+        }
+
+        .shuffle-button:not(.shuffled) {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .tone-practice {
+            background: linear-gradient(135deg, white, #dcfce7);
+            border: 4px solid #86efac;
+        }
+
+        .tone-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            z-index: 10;
+            position: relative;
+        }
+
+        .tone-button {
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 3px solid #d1d5db;
+            background: linear-gradient(135deg, white, #f9fafb);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tone-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            border-color: #9ca3af;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .tone-button.correct {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #dcfce7, #d1fae5);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .tone-button.incorrect {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .tone-number {
+            font-size: 1.125rem;
+            font-weight: bold;
+        }
+
+        .tone-desc {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .tone-symbol {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 0.25rem;
+        }
+
+        .score-display {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 1rem;
+        }
+
+        .score-text {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .streak-text {
+            font-size: 0.875rem;
+            color: #ea580c;
+            margin-top: 0.25rem;
+        }
+
+        .sentences-card {
+            background: linear-gradient(135deg, white, #fff7ed);
+            border: 4px solid #fed7aa;
+        }
+
+        .sentence-section {
+            background: #fef2f2;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .sentence-section.pinyin {
+            background: #fef3c7;
+        }
+
+        .sentence-section.english {
+            background: #dbeafe;
+        }
+
+        .sentence-chinese {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .sentence-pinyin {
+            font-size: 1.5rem;
+            color: #6b7280;
+        }
+
+        .sentence-english {
+            font-size: 1.25rem;
+            color: #374151;
+        }
+
+        .tone-guide {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 42rem;
+            margin: 0 auto;
+        }
+
+        .guide-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .tone-entry {
+            border-left: 4px solid;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tone-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .tone-symbol-large {
+            font-size: 1.875rem;
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+
+        .tone-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .tone-number-small {
+            margin-left: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        .tone-description {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .tone-example {
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        .pro-tips {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(to right, #dbeafe, #e0e7ff);
+            border-radius: 0.5rem;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .tips-title {
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .tips-list {
+            font-size: 0.875rem;
+            color: #1d4ed8;
+            list-style: none;
+            padding: 0;
+        }
+
+        .tips-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .practice-tip {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #fefce8;
+            border-radius: 0.5rem;
+            border: 1px solid #fde047;
+        }
+
+        .practice-title {
+            font-weight: 600;
+            color: #a16207;
+            margin-bottom: 0.5rem;
+        }
+
+        .practice-text {
+            font-size: 0.875rem;
+            color: #a16207;
+        }
+
+        .reset-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(to right, #6b7280, #4b5563);
+            color: white;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            margin: 0 auto;
+        }
+
+        .reset-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(to right, #4b5563, #374151);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-main {
+            font-weight: 600;
+        }
+
+        .footer-encouragement {
+            margin-top: 0.5rem;
+        }
+
+        .footer-tip {
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        /* Color classes for tones */
+        .tone-1 { color: #ef4444; }
+        .tone-2 { color: #f97316; }
+        .tone-3 { color: #10b981; }
+        .tone-4 { color: #3b82f6; }
+        .tone-0 { color: #6b7280; }
+
+        /* Border colors for tone guide */
+        .border-tone-1 { border-color: #ef4444; }
+        .border-tone-2 { border-color: #f97316; }
+        .border-tone-3 { border-color: #10b981; }
+        .border-tone-4 { border-color: #3b82f6; }
+        .border-tone-0 { border-color: #6b7280; }
+
+        /* Category colors */
+        .cat-greetings { background: #fce7f3; color: #be185d; }
+        .cat-pronouns { background: #f3e8ff; color: #7c3aed; }
+        .cat-verbs { background: #dbeafe; color: #1d4ed8; }
+        .cat-adjectives { background: #dcfce7; color: #059669; }
+        .cat-numbers { background: #fef3c7; color: #d97706; }
+        .cat-time { background: #e0e7ff; color: #4338ca; }
+        .cat-food { background: #fed7aa; color: #ea580c; }
+        .cat-places { background: #ccfbf1; color: #0f766e; }
+        .cat-transport { background: #cffafe; color: #0e7490; }
+        .cat-people { background: #fecaca; color: #dc2626; }
+        .cat-objects { background: #f3f4f6; color: #374151; }
+        .cat-electronics { background: #ede9fe; color: #7c2d12; }
+        .cat-entertainment { background: #fce7f3; color: #be185d; }
+        .cat-shopping { background: #ecfccb; color: #65a30d; }
+        .cat-activities { background: #fef3c7; color: #d97706; }
+        .cat-questions { background: #e0f2fe; color: #0284c7; }
+        .cat-particles { background: #d1fae5; color: #059669; }
+        .cat-prepositions { background: #fae8ff; color: #c026d3; }
+        .cat-basic { background: #f1f5f9; color: #475569; }
+
+        .hidden { display: none; }
+
+        @media (max-width: 768px) {
+            .title { font-size: 2rem; }
+            .chinese-text { font-size: 2rem; }
+            .sentence-chinese { font-size: 1.75rem; }
+            .nav { gap: 0.25rem; }
+            .nav-button { padding: 0.5rem 1rem; font-size: 0.875rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="flag-container">
+                <div class="flag">
+                    <div class="stars">
+                        ★<br>★<br>★<br>★
+                    </div>
+                </div>
+                <div class="flag-emoji">🇨🇳</div>
+            </div>
+            <h1 class="title">HSK1 Mandarin Companion</h1>
+            <p class="subtitle">🎯 Build your foundation for diplomatic communication 🌟</p>
+            <div class="emoji-row">
+                <span>📚</span><span>🗣️</span><span>🎵</span><span>✨</span>
+            </div>
+        </header>
+        
+        <nav class="nav">
+            <button class="nav-button active" onclick="setMode('flashcards')">
+                <span>📚</span>
+                <span>📖</span>
+                <span>Flashcards</span>
+            </button>
+            <button class="nav-button" onclick="setMode('tones')">
+                <span>🎵</span>
+                <span>🎯</span>
+                <span>Tone Practice</span>
+            </button>
+            <button class="nav-button" onclick="setMode('sentences')">
+                <span>💬</span>
+                <span>🔊</span>
+                <span>Sentences</span>
+            </button>
+            <button class="nav-button" onclick="setMode('guide')">
+                <span>🏆</span>
+                <span>📋</span>
+                <span>Tone Guide</span>
+            </button>
+        </nav>
+        
+        <main id="main-content">
+            <!-- Content will be dynamically inserted here -->
+        </main>
+        
+        <div style="text-align: center;">
+            <button class="reset-button" onclick="resetProgress()">
+                <span>🔄</span>
+                <span>Reset Progress</span>
+            </button>
+        </div>
+        
+        <footer class="footer">
+            <p class="footer-main">HSK1 covers ~150 words. Master these fundamentals first!</p>
+            <p class="footer-encouragement">Good luck with your diplomatic language journey! <strong style="color: #dc2626;">加油！</strong> (jiā yóu - keep going!)</p>
+            <div class="footer-tip">
+                💡 Tip: Use spaced repetition - review difficult words more frequently!
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // HSK1 Vocabulary Data
+        const HSK1_VOCABULARY = [
+            { chinese: '你好', pinyin: 'nǐ hǎo', english: 'hello', tone: [3, 3], category: 'greetings' },
+            { chinese: '我', pinyin: 'wǒ', english: 'I/me', tone: [3], category: 'pronouns' },
+            { chinese: '你', pinyin: 'nǐ', english: 'you', tone: [3], category: 'pronouns' },
+            { chinese: '他', pinyin: 'tā', english: 'he/him', tone: [1], category: 'pronouns' },
+            { chinese: '她', pinyin: 'tā', english: 'she/her', tone: [1], category: 'pronouns' },
+            { chinese: '是', pinyin: 'shì', english: 'to be', tone: [4], category: 'verbs' },
+            { chinese: '不', pinyin: 'bù', english: 'not', tone: [4], category: 'particles' },
+            { chinese: '的', pinyin: 'de', english: 'possessive particle', tone: [0], category: 'particles' },
+            { chinese: '有', pinyin: 'yǒu', english: 'to have', tone: [3], category: 'verbs' },
+            { chinese: '在', pinyin: 'zài', english: 'at/in', tone: [4], category: 'prepositions' },
+            { chinese: '人', pinyin: 'rén', english: 'person', tone: [2], category: 'people' },
+            { chinese: '中国', pinyin: 'zhōng guó', english: 'China', tone: [1, 2], category: 'places' },
+            { chinese: '老师', pinyin: 'lǎo shī', english: 'teacher', tone: [3, 1], category: 'people' },
+            { chinese: '学生', pinyin: 'xué shēng', english: 'student', tone: [2, 1], category: 'people' },
+            { chinese: '朋友', pinyin: 'péng yǒu', english: 'friend', tone: [2, 3], category: 'people' },
+            { chinese: '家', pinyin: 'jiā', english: 'home/family', tone: [1], category: 'places' },
+            { chinese: '学校', pinyin: 'xué xiào', english: 'school', tone: [2, 4], category: 'places' },
+            { chinese: '工作', pinyin: 'gōng zuò', english: 'work', tone: [1, 4], category: 'activities' },
+            { chinese: '今天', pinyin: 'jīn tiān', english: 'today', tone: [1, 1], category: 'time' },
+            { chinese: '明天', pinyin: 'míng tiān', english: 'tomorrow', tone: [2, 1], category: 'time' },
+            { chinese: '昨天', pinyin: 'zuó tiān', english: 'yesterday', tone: [2, 1], category: 'time' },
+            { chinese: '现在', pinyin: 'xiàn zài', english: 'now', tone: [4, 4], category: 'time' },
+            { chinese: '时间', pinyin: 'shí jiān', english: 'time', tone: [2, 1], category: 'time' },
+            { chinese: '年', pinyin: 'nián', english: 'year', tone: [2], category: 'time' },
+            { chinese: '月', pinyin: 'yuè', english: 'month', tone: [4], category: 'time' },
+            { chinese: '日', pinyin: 'rì', english: 'day', tone: [4], category: 'time' },
+            { chinese: '星期', pinyin: 'xīng qī', english: 'week', tone: [1, 1], category: 'time' },
+            { chinese: '名字', pinyin: 'míng zi', english: 'name', tone: [2, 0], category: 'basic' },
+            { chinese: '什么', pinyin: 'shén me', english: 'what', tone: [2, 0], category: 'questions' },
+            { chinese: '哪里', pinyin: 'nǎ lǐ', english: 'where', tone: [3, 3], category: 'questions' },
+            { chinese: '谁', pinyin: 'shéi', english: 'who', tone: [2], category: 'questions' },
+            { chinese: '多少', pinyin: 'duō shao', english: 'how much/many', tone: [1, 0], category: 'questions' },
+            { chinese: '几', pinyin: 'jǐ', english: 'how many (small number)', tone: [3], category: 'questions' },
+            { chinese: '怎么', pinyin: 'zěn me', english: 'how', tone: [3, 0], category: 'questions' },
+            { chinese: '为什么', pinyin: 'wèi shén me', english: 'why', tone: [4, 2, 0], category: 'questions' },
+            { chinese: '水', pinyin: 'shuǐ', english: 'water', tone: [3], category: 'food' },
+            { chinese: '茶', pinyin: 'chá', english: 'tea', tone: [2], category: 'food' },
+            { chinese: '咖啡', pinyin: 'kā fēi', english: 'coffee', tone: [1, 1], category: 'food' },
+            { chinese: '牛奶', pinyin: 'niú nǎi', english: 'milk', tone: [2, 3], category: 'food' },
+            { chinese: '面包', pinyin: 'miàn bāo', english: 'bread', tone: [4, 1], category: 'food' },
+            { chinese: '米饭', pinyin: 'mǐ fàn', english: 'rice', tone: [3, 4], category: 'food' },
+            { chinese: '面条', pinyin: 'miàn tiáo', english: 'noodles', tone: [4, 2], category: 'food' },
+            { chinese: '菜', pinyin: 'cài', english: 'dish/vegetable', tone: [4], category: 'food' },
+            { chinese: '水果', pinyin: 'shuǐ guǒ', english: 'fruit', tone: [3, 3], category: 'food' },
+            { chinese: '苹果', pinyin: 'píng guǒ', english: 'apple', tone: [2, 3], category: 'food' },
+            { chinese: '香蕉', pinyin: 'xiāng jiāo', english: 'banana', tone: [1, 1], category: 'food' },
+            { chinese: '钱', pinyin: 'qián', english: 'money', tone: [2], category: 'shopping' },
+            { chinese: '买', pinyin: 'mǎi', english: 'to buy', tone: [3], category: 'verbs' },
+            { chinese: '卖', pinyin: 'mài', english: 'to sell', tone: [4], category: 'verbs' },
+            { chinese: '吃', pinyin: 'chī', english: 'to eat', tone: [1], category: 'verbs' },
+            { chinese: '喝', pinyin: 'hē', english: 'to drink', tone: [1], category: 'verbs' },
+            { chinese: '看', pinyin: 'kàn', english: 'to look/watch', tone: [4], category: 'verbs' },
+            { chinese: '听', pinyin: 'tīng', english: 'to listen', tone: [1], category: 'verbs' },
+            { chinese: '说', pinyin: 'shuō', english: 'to speak', tone: [1], category: 'verbs' },
+            { chinese: '读', pinyin: 'dú', english: 'to read', tone: [2], category: 'verbs' },
+            { chinese: '写', pinyin: 'xiě', english: 'to write', tone: [3], category: 'verbs' },
+            { chinese: '学', pinyin: 'xué', english: 'to study/learn', tone: [2], category: 'verbs' },
+            { chinese: '教', pinyin: 'jiāo', english: 'to teach', tone: [1], category: 'verbs' },
+            { chinese: '去', pinyin: 'qù', english: 'to go', tone: [4], category: 'verbs' },
+            { chinese: '来', pinyin: 'lái', english: 'to come', tone: [2], category: 'verbs' },
+            { chinese: '回', pinyin: 'huí', english: 'to return', tone: [2], category: 'verbs' },
+            { chinese: '走', pinyin: 'zǒu', english: 'to walk/leave', tone: [3], category: 'verbs' },
+            { chinese: '坐', pinyin: 'zuò', english: 'to sit', tone: [4], category: 'verbs' },
+            { chinese: '站', pinyin: 'zhàn', english: 'to stand', tone: [4], category: 'verbs' },
+            { chinese: '睡觉', pinyin: 'shuì jiào', english: 'to sleep', tone: [4, 4], category: 'activities' },
+            { chinese: '起床', pinyin: 'qǐ chuáng', english: 'to get up', tone: [3, 2], category: 'activities' },
+            { chinese: '洗澡', pinyin: 'xǐ zǎo', english: 'to take a bath', tone: [3, 3], category: 'activities' },
+            { chinese: '书', pinyin: 'shū', english: 'book', tone: [1], category: 'objects' },
+            { chinese: '桌子', pinyin: 'zhuō zi', english: 'table', tone: [1, 0], category: 'objects' },
+            { chinese: '椅子', pinyin: 'yǐ zi', english: 'chair', tone: [3, 0], category: 'objects' },
+            { chinese: '房间', pinyin: 'fáng jiān', english: 'room', tone: [2, 1], category: 'places' },
+            { chinese: '厕所', pinyin: 'cè suǒ', english: 'toilet', tone: [4, 3], category: 'places' },
+            { chinese: '门', pinyin: 'mén', english: 'door', tone: [2], category: 'objects' },
+            { chinese: '窗户', pinyin: 'chuāng hu', english: 'window', tone: [1, 0], category: 'objects' },
+            { chinese: '床', pinyin: 'chuáng', english: 'bed', tone: [2], category: 'objects' },
+            { chinese: '电视', pinyin: 'diàn shì', english: 'television', tone: [4, 4], category: 'electronics' },
+            { chinese: '电脑', pinyin: 'diàn nǎo', english: 'computer', tone: [4, 3], category: 'electronics' },
+            { chinese: '手机', pinyin: 'shǒu jī', english: 'mobile phone', tone: [3, 1], category: 'electronics' },
+            { chinese: '电影', pinyin: 'diàn yǐng', english: 'movie', tone: [4, 3], category: 'entertainment' },
+            { chinese: '音乐', pinyin: 'yīn yuè', english: 'music', tone: [1, 4], category: 'entertainment' },
+            { chinese: '汽车', pinyin: 'qì chē', english: 'car', tone: [4, 1], category: 'transport' },
+            { chinese: '出租车', pinyin: 'chū zū chē', english: 'taxi', tone: [1, 1, 1], category: 'transport' },
+            { chinese: '公共汽车', pinyin: 'gōng gòng qì chē', english: 'bus', tone: [1, 4, 4, 1], category: 'transport' },
+            { chinese: '火车', pinyin: 'huǒ chē', english: 'train', tone: [3, 1], category: 'transport' },
+            { chinese: '飞机', pinyin: 'fēi jī', english: 'airplane', tone: [1, 1], category: 'transport' },
+            { chinese: '自行车', pinyin: 'zì xíng chē', english: 'bicycle', tone: [4, 2, 1], category: 'transport' },
+            { chinese: '医院', pinyin: 'yī yuàn', english: 'hospital', tone: [1, 4], category: 'places' },
+            { chinese: '商店', pinyin: 'shāng diàn', english: 'shop', tone: [1, 4], category: 'places' },
+            { chinese: '超市', pinyin: 'chāo shì', english: 'supermarket', tone: [1, 4], category: 'places' },
+            { chinese: '饭店', pinyin: 'fàn diàn', english: 'restaurant', tone: [4, 4], category: 'places' },
+            { chinese: '银行', pinyin: 'yín háng', english: 'bank', tone: [2, 2], category: 'places' },
+            { chinese: '邮局', pinyin: 'yóu jú', english: 'post office', tone: [2, 2], category: 'places' },
+            { chinese: '火车站', pinyin: 'huǒ chē zhàn', english: 'train station', tone: [3, 1, 4], category: 'places' },
+            { chinese: '机场', pinyin: 'jī chǎng', english: 'airport', tone: [1, 3], category: 'places' },
+            { chinese: '大', pinyin: 'dà', english: 'big', tone: [4], category: 'adjectives' },
+            { chinese: '小', pinyin: 'xiǎo', english: 'small', tone: [3], category: 'adjectives' },
+            { chinese: '多', pinyin: 'duō', english: 'many/much', tone: [1], category: 'adjectives' },
+            { chinese: '少', pinyin: 'shǎo', english: 'few/little', tone: [3], category: 'adjectives' },
+            { chinese: '好', pinyin: 'hǎo', english: 'good', tone: [3], category: 'adjectives' },
+            { chinese: '坏', pinyin: 'huài', english: 'bad', tone: [4], category: 'adjectives' },
+            { chinese: '新', pinyin: 'xīn', english: 'new', tone: [1], category: 'adjectives' },
+            { chinese: '旧', pinyin: 'jiù', english: 'old', tone: [4], category: 'adjectives' },
+            { chinese: '高', pinyin: 'gāo', english: 'tall/high', tone: [1], category: 'adjectives' },
+            { chinese: '矮', pinyin: 'ǎi', english: 'short', tone: [3], category: 'adjectives' },
+            { chinese: '胖', pinyin: 'pàng', english: 'fat', tone: [4], category: 'adjectives' },
+            { chinese: '瘦', pinyin: 'shòu', english: 'thin', tone: [4], category: 'adjectives' },
+            { chinese: '热', pinyin: 'rè', english: 'hot', tone: [4], category: 'adjectives' },
+            { chinese: '冷', pinyin: 'lěng', english: 'cold', tone: [3], category: 'adjectives' },
+            { chinese: '快', pinyin: 'kuài', english: 'fast', tone: [4], category: 'adjectives' },
+            { chinese: '慢', pinyin: 'màn', english: 'slow', tone: [4], category: 'adjectives' },
+            { chinese: '早', pinyin: 'zǎo', english: 'early', tone: [3], category: 'time' },
+            { chinese: '晚', pinyin: 'wǎn', english: 'late', tone: [3], category: 'time' },
+            { chinese: '忙', pinyin: 'máng', english: 'busy', tone: [2], category: 'adjectives' },
+            { chinese: '累', pinyin: 'lèi', english: 'tired', tone: [4], category: 'adjectives' },
+            { chinese: '高兴', pinyin: 'gāo xìng', english: 'happy', tone: [1, 4], category: 'adjectives' },
+            { chinese: '漂亮', pinyin: 'piào liang', english: 'beautiful', tone: [4, 0], category: 'adjectives' },
+            { chinese: '聪明', pinyin: 'cōng ming', english: 'smart', tone: [1, 0], category: 'adjectives' },
+            { chinese: '一', pinyin: 'yī', english: 'one', tone: [1], category: 'numbers' },
+            { chinese: '二', pinyin: 'èr', english: 'two', tone: [4], category: 'numbers' },
+            { chinese: '三', pinyin: 'sān', english: 'three', tone: [1], category: 'numbers' },
+            { chinese: '四', pinyin: 'sì', english: 'four', tone: [4], category: 'numbers' },
+            { chinese: '五', pinyin: 'wǔ', english: 'five', tone: [3], category: 'numbers' },
+            { chinese: '六', pinyin: 'liù', english: 'six', tone: [4], category: 'numbers' },
+            { chinese: '七', pinyin: 'qī', english: 'seven', tone: [1], category: 'numbers' },
+            { chinese: '八', pinyin: 'bā', english: 'eight', tone: [1], category: 'numbers' },
+            { chinese: '九', pinyin: 'jiǔ', english: 'nine', tone: [3], category: 'numbers' },
+            { chinese: '十', pinyin: 'shí', english: 'ten', tone: [2], category: 'numbers' },
+            { chinese: '百', pinyin: 'bǎi', english: 'hundred', tone: [3], category: 'numbers' },
+            { chinese: '千', pinyin: 'qiān', english: 'thousand', tone: [1], category: 'numbers' },
+            { chinese: '万', pinyin: 'wàn', english: 'ten thousand', tone: [4], category: 'numbers' }
+        ];
+
+        const TONES = {
+            1: { name: 'First Tone', description: 'High, flat', color: 'tone-1', symbol: '¯' },
+            2: { name: 'Second Tone', description: 'Rising', color: 'tone-2', symbol: '´' },
+            3: { name: 'Third Tone', description: 'Falling-rising', color: 'tone-3', symbol: 'ˇ' },
+            4: { name: 'Fourth Tone', description: 'Falling', color: 'tone-4', symbol: '`' },
+            0: { name: 'Neutral Tone', description: 'Light, quick', color: 'tone-0', symbol: '·' }
+        };
+
+        const CATEGORIES = {
+            'greetings': { emoji: '👋', class: 'cat-greetings' },
+            'pronouns': { emoji: '👤', class: 'cat-pronouns' },
+            'verbs': { emoji: '🏃', class: 'cat-verbs' },
+            'adjectives': { emoji: '✨', class: 'cat-adjectives' },
+            'numbers': { emoji: '🔢', class: 'cat-numbers' },
+            'time': { emoji: '⏰', class: 'cat-time' },
+            'food': { emoji: '🍽️', class: 'cat-food' },
+            'places': { emoji: '🏢', class: 'cat-places' },
+            'transport': { emoji: '🚗', class: 'cat-transport' },
+            'people': { emoji: '👥', class: 'cat-people' },
+            'objects': { emoji: '📦', class: 'cat-objects' },
+            'electronics': { emoji: '💻', class: 'cat-electronics' },
+            'entertainment': { emoji: '🎭', class: 'cat-entertainment' },
+            'shopping': { emoji: '🛒', class: 'cat-shopping' },
+            'activities': { emoji: '⚡', class: 'cat-activities' },
+            'questions': { emoji: '❓', class: 'cat-questions' },
+            'particles': { emoji: '🔗', class: 'cat-particles' },
+            'prepositions': { emoji: '📍', class: 'cat-prepositions' },
+            'basic': { emoji: '⭐', class: 'cat-basic' }
+        };
+
+        const BASIC_SENTENCES = [
+            { chinese: '我是学生。', pinyin: 'Wǒ shì xué shēng.', english: 'I am a student.' },
+            { chinese: '你好吗？', pinyin: 'Nǐ hǎo ma?', english: 'How are you?' },
+            { chinese: '他是老师。', pinyin: 'Tā shì lǎo shī.', english: 'He is a teacher.' },
+            { chinese: '这是我的书。', pinyin: 'Zhè shì wǒ de shū.', english: 'This is my book.' },
+            { chinese: '你叫什么名字？', pinyin: 'Nǐ jiào shén me míng zi?', english: 'What is your name?' },
+            { chinese: '今天星期几？', pinyin: 'Jīn tiān xīng qī jǐ?', english: 'What day is today?' },
+            { chinese: '现在几点？', pinyin: 'Xiàn zài jǐ diǎn?', english: 'What time is it now?' },
+            { chinese: '我有一个朋友。', pinyin: 'Wǒ yǒu yī gè péng yǒu.', english: 'I have a friend.' },
+            { chinese: '我在学校。', pinyin: 'Wǒ zài xué xiào.', english: 'I am at school.' },
+            { chinese: '谢谢你！', pinyin: 'Xiè xiè nǐ!', english: 'Thank you!' },
+            { chinese: '不客气。', pinyin: 'Bù kè qi.', english: 'You\'re welcome.' },
+            { chinese: '对不起。', pinyin: 'Duì bu qǐ.', english: 'Sorry.' }
+        ];
+
+        // App State
+        let state = {
+            currentMode: 'flashcards',
+            currentCard: 0,
+            showAnswer: false,
+            score: 0,
+            totalAnswered: 0,
+            currentSentence: 0,
+            selectedTone: null,
+            quizMode: 'chinese-to-english',
+            selectedCategory: 'all',
+            studyStreak: 0,
+            masteredWords: new Set(),
+            shuffledCards: [],
+            isShuffled: false,
+            studySession: { started: false, wordsStudied: 0, timeStarted: null }
+        };
+
+        // Initialize
+        function init() {
+            state.shuffledCards = Array.from({length: HSK1_VOCABULARY.length}, (_, i) => i);
+            updateDisplay();
+        }
+
+        function setMode(mode) {
+            state.currentMode = mode;
+            document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.nav-button').classList.add('active');
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const content = document.getElementById('main-content');
+            
+            switch(state.currentMode) {
+                case 'flashcards':
+                    content.innerHTML = renderFlashcards();
+                    break;
+                case 'tones':
+                    content.innerHTML = renderTonePractice();
+                    break;
+                case 'sentences':
+                    content.innerHTML = renderSentences();
+                    break;
+                case 'guide':
+                    content.innerHTML = renderToneGuide();
+                    break;
+            }
+        }
+
+        function getFilteredVocab() {
+            return state.selectedCategory === 'all' 
+                ? HSK1_VOCABULARY 
+                : HSK1_VOCABULARY.filter(word => word.category === state.selectedCategory);
+        }
+
+        function getCurrentWord() {
+            const filtered = getFilteredVocab();
+            if (state.selectedCategory === 'all') {
+                return HSK1_VOCABULARY[state.isShuffled ? state.shuffledCards[state.currentCard] : state.currentCard];
+            } else {
+                return filtered[state.currentCard];
+            }
+        }
+
+        function renderProgressStats() {
+            const studyTime = state.studySession.timeStarted ? Math.floor((Date.now() - state.studySession.timeStarted) / 60000) : 0;
+            const accuracy = state.totalAnswered > 0 ? Math.round((state.score / state.totalAnswered) * 100) : 0;
+            
+            return `
+                <div class="progress-stats">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #3b82f6;">${state.studySession.wordsStudied}</div>
+                            <div class="stat-label">Words Studied</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #10b981;">${state.masteredWords.size}</div>
+                            <div class="stat-label">Mastered</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #8b5cf6;">${accuracy}%</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: #f97316;">${studyTime}m</div>
+                            <div class="stat-label">Study Time</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCategoryFilter() {
+            let html = '<div class="category-filter">';
+            
+            html += `<button class="category-button ${state.selectedCategory === 'all' ? 'active' : ''}" 
+                     onclick="setCategory('all')">🌟 All Categories</button>`;
+            
+            Object.entries(CATEGORIES).forEach(([category, info]) => {
+                html += `<button class="category-button ${CATEGORIES[category].class} ${state.selectedCategory === category ? 'active' : ''}" 
+                         onclick="setCategory('${category}')">${info.emoji} ${category.charAt(0).toUpperCase() + category.slice(1)}</button>`;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function renderToneIndicator(tones) {
+            return tones.map((tone, index) => 
+                `<span class="${TONES[tone].color}">${tone === 0 ? '·' : tone}${index < tones.length - 1 ? ' ' : ''}</span>`
+            ).join('');
+        }
+
+        function renderFlashcards() {
+            const currentWord = getCurrentWord();
+            const filteredVocab = getFilteredVocab();
+            const wordIndex = state.selectedCategory === 'all' 
+                ? (state.isShuffled ? state.shuffledCards[state.currentCard] : state.currentCard)
+                : HSK1_VOCABULARY.findIndex(w => w === currentWord);
+            const isMastered = state.masteredWords.has(wordIndex);
+            
+            return `
+                <div class="card-container">
+                    ${renderProgressStats()}
+                    ${renderCategoryFilter()}
+                    
+                    <div class="flashcard ${isMastered ? 'mastered' : ''}">
+                        <div class="card-bg-emoji top-right">📚</div>
+                        <div class="card-bg-emoji bottom-left">✨</div>
+                        
+                        ${isMastered ? '<div class="mastery-star">⭐</div>' : ''}
+                        
+                        <div class="card-content">
+                            <div class="chinese-text">
+                                ${state.quizMode === 'chinese-to-english' ? currentWord.chinese : currentWord.english}
+                            </div>
+                            <div class="pinyin-text">${currentWord.pinyin}</div>
+                            <div class="tone-indicator">
+                                ${renderToneIndicator(currentWord.tone)}
+                            </div>
+                            <div class="category-tag ${CATEGORIES[currentWord.category].class}">
+                                ${CATEGORIES[currentWord.category].emoji} ${currentWord.category}
+                            </div>
+                        </div>
+                        
+                        ${state.showAnswer ? `
+                            <div class="answer-section">
+                                <div class="answer-text">
+                                    ${state.quizMode === 'chinese-to-english' ? currentWord.english : currentWord.chinese}
+                                </div>
+                                <div class="tone-info">
+                                    🎵 Tones: ${currentWord.tone.map(t => TONES[t].name).join(', ')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="control-button nav-control" onclick="prevCard()">‹</button>
+                        
+                        <div class="center-controls">
+                            <button class="action-button show-button" onclick="toggleAnswer()">
+                                ${state.showAnswer ? '🙈 Hide' : '👀 Show'}
+                            </button>
+                            ${state.showAnswer && !isMastered ? 
+                                '<button class="action-button master-button" onclick="markAsMastered()">⭐ Master</button>' : ''}
+                            <button class="action-button flip-button" onclick="flipQuizMode()">🔄</button>
+                        </div>
+                        
+                        <button class="control-button nav-control" onclick="nextCard()">›</button>
+                    </div>
+                    
+                    <div class="progress-info">
+                        <div class="progress-card">
+                            <span class="progress-text">
+                                📊 Card ${state.currentCard + 1} of ${filteredVocab.length}
+                            </span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${((state.currentCard + 1) / filteredVocab.length) * 100}%"></div>
+                            </div>
+                        </div>
+                        
+                        ${state.selectedCategory === 'all' ? `
+                            <button class="shuffle-button ${state.isShuffled ? 'shuffled' : ''}" onclick="shuffleCards()">
+                                🔀 ${state.isShuffled ? 'Shuffled!' : 'Shuffle Cards'}
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTonePractice() {
+            const currentWord = getCurrentWord();
+            const filteredVocab = getFilteredVocab();
+            
+            return `
+                <div class="card-container">
+                    ${renderProgressStats()}
+                    ${renderCategoryFilter()}
+                    
+                    <div class="flashcard tone-practice">
+                        <div class="card-bg-emoji top-right">🎵</div>
+                        <div class="card-bg-emoji bottom-left">🎯</div>
+                        
+                        <div class="card-content">
+                            <div class="chinese-text">${currentWord.chinese}</div>
+                            <div class="pinyin-text">${currentWord.pinyin}</div>
+                            <div class="answer-text" style="background: #dbeafe; color: #374151;">${currentWord.english}</div>
+                            <div class="category-tag ${CATEGORIES[currentWord.category].class}">
+                                ${CATEGORIES[currentWord.category].emoji} ${currentWord.category}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem; z-index: 10; position: relative;">
+                            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; text-align: center; background: linear-gradient(to right, #059669, #0f766e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                🎵 What tone(s) does this word use? 🤔
+                            </h3>
+                            <div class="tone-grid">
+                                ${Object.entries(TONES).map(([toneNum, toneInfo]) => `
+                                    <button class="tone-button ${
+                                        state.selectedTone === parseInt(toneNum) 
+                                            ? (currentWord.tone.includes(parseInt(toneNum)) ? 'correct' : 'incorrect') 
+                                            : ''
+                                    }" onclick="handleToneGuess(${toneNum})" ${state.selectedTone !== null ? 'disabled' : ''}>
+                                        <div class="tone-number ${toneInfo.color}">
+                                            ${toneNum === '0' ? '🔄 Neutral' : `${toneNum}️⃣ Tone ${toneNum}`}
+                                        </div>
+                                        <div class="tone-desc">${toneInfo.description}</div>
+                                        <div class="tone-symbol">${toneInfo.symbol}</div>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        ${state.selectedTone !== null ? `
+                            <div style="text-align: center; z-index: 10; position: relative;">
+                                <div style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; background: #fef3c7; padding: 0.75rem 1rem; border-radius: 1rem;">
+                                    ✅ Correct tones: ${renderToneIndicator(currentWord.tone)}
+                                </div>
+                                <div style="font-size: 0.875rem; color: #6b7280; background: #f3f4f6; padding: 0.5rem 0.75rem; border-radius: 9999px;">
+                                    ${currentWord.tone.map(t => TONES[t].name).join(', ')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="progress-info">
+                        <div class="score-display">
+                            <span class="score-text">
+                                🎯 Score: <span style="color: #059669;">${state.score}</span>/<span style="color: #3b82f6;">${state.totalAnswered}</span>
+                            </span>
+                            ${state.studyStreak > 0 ? `<div class="streak-text">🔥 Streak: ${state.studyStreak}</div>` : ''}
+                        </div>
+                        <div class="progress-card" style="background: linear-gradient(to right, #f3e8ff, #fce7f3); margin-top: 0.5rem;">
+                            <span class="progress-text">
+                                📊 Card ${state.currentCard + 1} of ${filteredVocab.length}
+                            </span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="background: linear-gradient(to right, #10b981, #059669); width: ${((state.currentCard + 1) / filteredVocab.length) * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSentences() {
+            const currentSentenceData = BASIC_SENTENCES[state.currentSentence];
+            
+            return `
+                <div style="max-width: 42rem; margin: 0 auto;">
+                    <div class="flashcard sentences-card">
+                        <div class="card-bg-emoji top-right">💬</div>
+                        <div class="card-bg-emoji bottom-left">🌟</div>
+                        
+                        <div style="text-align: center; margin-bottom: 1.5rem; z-index: 10; position: relative;">
+                            <div class="sentence-section">
+                                <div class="sentence-chinese">${currentSentenceData.chinese}</div>
+                            </div>
+                            <div class="sentence-section pinyin">
+                                <div class="sentence-pinyin">${currentSentenceData.pinyin}</div>
+                            </div>
+                            <div class="sentence-section english">
+                                <div class="sentence-english">💡 ${currentSentenceData.english}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="control-button" style="background: linear-gradient(to right, #f97316, #ef4444);" onclick="prevSentence()">‹</button>
+                        
+                        <div style="text-align: center; background: white; border-radius: 1rem; padding: 0.75rem 1.5rem; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);">
+                            <div style="font-size: 1.125rem; font-weight: 600; color: #374151;">
+                                📝 Sentence <span style="color: #f97316;">${state.currentSentence + 1}</span> of <span style="color: #ef4444;">${BASIC_SENTENCES.length}</span>
+                            </div>
+                            <div style="width: 8rem; background: #e5e7eb; border-radius: 9999px; height: 0.5rem; margin-top: 0.5rem; margin-left: auto; margin-right: auto;">
+                                <div style="background: linear-gradient(to right, #f97316, #ef4444); height: 0.5rem; border-radius: 9999px; transition: all 0.3s; width: ${((state.currentSentence + 1) / BASIC_SENTENCES.length) * 100}%"></div>
+                            </div>
+                        </div>
+                        
+                        <button class="control-button" style="background: linear-gradient(to right, #f97316, #ef4444);" onclick="nextSentence()">›</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderToneGuide() {
+            return `
+                <div class="tone-guide">
+                    <h2 class="guide-title">🎵 Mandarin Tone Guide</h2>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        ${Object.entries(TONES).map(([toneNum, toneInfo]) => `
+                            <div class="tone-entry border-${toneInfo.color}">
+                                <div class="tone-header">
+                                    <span class="tone-symbol-large ${toneInfo.color}">
+                                        ${toneInfo.symbol}
+                                    </span>
+                                    <span class="tone-name">${toneInfo.name}</span>
+                                    <span class="tone-number-small ${toneInfo.color}">
+                                        ${toneNum === '0' ? '·' : toneNum}
+                                    </span>
+                                </div>
+                                <p class="tone-description">${toneInfo.description}</p>
+                                
+                                ${toneNum === '1' ? '<p class="tone-example">Example: 妈 (mā) - mother | Keep your voice high and steady</p>' : ''}
+                                ${toneNum === '2' ? '<p class="tone-example">Example: 麻 (má) - hemp | Start low and rise like asking "Really?"</p>' : ''}
+                                ${toneNum === '3' ? '<p class="tone-example">Example: 马 (mǎ) - horse | Dip down then rise up</p>' : ''}
+                                ${toneNum === '4' ? '<p class="tone-example">Example: 骂 (mà) - to scold | Start high and drop sharply</p>' : ''}
+                                ${toneNum === '0' ? '<p class="tone-example">Example: 吗 (ma) - question particle | Quick and light</p>' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="pro-tips">
+                        <h3 class="tips-title">
+                            📈 💡 Pro Learning Tips:
+                        </h3>
+                        <ul class="tips-list">
+                            <li>• <strong>Practice with gestures:</strong> Use hand movements to follow tone patterns</li>
+                            <li>• <strong>Record yourself:</strong> Compare your pronunciation with native speakers</li>
+                            <li>• <strong>Learn tone pairs:</strong> Some combinations are more common than others</li>
+                            <li>• <strong>Context matters:</strong> Wrong tone = wrong word (mā vs má vs mǎ vs mà)</li>
+                            <li>• <strong>Start slow:</strong> Focus on accuracy before speed</li>
+                            <li>• <strong>Use tone marks:</strong> Always include them when writing pinyin</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="practice-tip">
+                        <h4 class="practice-title">🎯 Quick Practice:</h4>
+                        <p class="practice-text">
+                            Try saying "ma" in all four tones plus neutral: mā (mother), má (hemp), mǎ (horse), mà (scold), ma (question particle)
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Event Handlers
+        function setCategory(category) {
+            state.selectedCategory = category;
+            state.currentCard = 0;
+            updateDisplay();
+        }
+
+        function nextCard() {
+            const filteredVocab = getFilteredVocab();
+            state.currentCard = (state.currentCard + 1) % filteredVocab.length;
+            state.showAnswer = false;
+            state.selectedTone = null;
+            
+            if (state.studySession.started) {
+                state.studySession.wordsStudied++;
+            } else {
+                state.studySession = { started: true, wordsStudied: 1, timeStarted: Date.now() };
+            }
+            
+            updateDisplay();
+        }
+
+        function prevCard() {
+            const filteredVocab = getFilteredVocab();
+            state.currentCard = (state.currentCard - 1 + filteredVocab.length) % filteredVocab.length;
+            state.showAnswer = false;
+            state.selectedTone = null;
+            updateDisplay();
+        }
+
+        function toggleAnswer() {
+            state.showAnswer = !state.showAnswer;
+            updateDisplay();
+        }
+
+        function markAsMastered() {
+            const currentWord = getCurrentWord();
+            const wordIndex = state.selectedCategory === 'all' 
+                ? (state.isShuffled ? state.shuffledCards[state.currentCard] : state.currentCard)
+                : HSK1_VOCABULARY.findIndex(w => w === currentWord);
+            
+            state.masteredWords.add(wordIndex);
+            nextCard();
+        }
+
+        function flipQuizMode() {
+            state.quizMode = state.quizMode === 'chinese-to-english' ? 'english-to-chinese' : 'chinese-to-english';
+            updateDisplay();
+        }
+
+        function shuffleCards() {
+            const newShuffled = Array.from({length: HSK1_VOCABULARY.length}, (_, i) => i);
+            for (let i = newShuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newShuffled[i], newShuffled[j]] = [newShuffled[j], newShuffled[i]];
+            }
+            state.shuffledCards = newShuffled;
+            state.isShuffled = true;
+            state.currentCard = 0;
+            updateDisplay();
+        }
+
+        function handleToneGuess(tone) {
+            state.selectedTone = parseInt(tone);
+            const currentWord = getCurrentWord();
+            const correctTones = currentWord.tone;
+            
+            if (correctTones.includes(parseInt(tone))) {
+                state.score++;
+                if (state.score > 0 && state.score % 5 === 0) {
+                    state.studyStreak++;
+                }
+            }
+            state.totalAnswered++;
+            
+            updateDisplay();
+            
+            setTimeout(() => {
+                nextCard();
+            }, 1500);
+        }
+
+        function nextSentence() {
+            state.currentSentence = (state.currentSentence + 1) % BASIC_SENTENCES.length;
+            updateDisplay();
+        }
+
+        function prevSentence() {
+            state.currentSentence = (state.currentSentence - 1 + BASIC_SENTENCES.length) % BASIC_SENTENCES.length;
+            updateDisplay();
+        }
+
+        function resetProgress() {
+            state = {
+                currentMode: state.currentMode,
+                currentCard: 0,
+                showAnswer: false,
+                score: 0,
+                totalAnswered: 0,
+                currentSentence: 0,
+                selectedTone: null,
+                quizMode: 'chinese-to-english',
+                selectedCategory: 'all',
+                studyStreak: 0,
+                masteredWords: new Set(),
+                shuffledCards: Array.from({length: HSK1_VOCABULARY.length}, (_, i) => i),
+                isShuffled: false,
+                studySession: { started: false, wordsStudied: 0, timeStarted: null }
+            };
+            updateDisplay();
+        }
+
+        // Initialize the app
+        window.onload = init;
+    </script>
+</body>
+</html>
